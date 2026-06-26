@@ -1,5 +1,17 @@
 # IDP Plus — Founder & Full-Stack Developer
 
+
+## IDP Plus Project Background
+
+After graduating from grad school in 2024, while waiting for my Canadian permanent residency process, during the gap, I co-founded IDP Plus with partners in China as a startup project. Our team brought together software engineers, project managers, and licensed paralegals to build a trusted solution for Chinese drivers traveling abroad.
+
+We identified a common pain point: since China is not a signatory to the International Driving Permit (IDP) Convention, Chinese driver's license holders cannot obtain an official IDP. However, many countries and car rental companies accept a Chinese driver's license accompanied by a professionally translated, internationally compliant driving document. We built IDP Plus to make this process fast, convenient, and reliable.
+
+As the technical lead, I was responsible for the entire product lifecycle—from system architecture, UI/UX design, full-stack development, testing, deployment, and production operations to continuous feature iteration. Beyond engineering, I also collaborated with printing partners, distributors, logistics providers, and marketing teams to launch and operate the business across Chinese social media platforms such as Xiaohongshu (RED) and Douyin.
+
+Today, IDP Plus remains an active business, serving more than 500 customers and processing approximately 20 orders per month, providing both physical and digital international driving document packages to Chinese travelers worldwide.
+
+
 ## One-Line Overview
 IDP Plus (idp-plus.com) is an online platform that helps Chinese drivers obtain internationally recognized driver's-license translations and travel documents for renting and driving cars overseas. My target users are Chinese travelers, business travelers, international students, and overseas Chinese communities. The core problem: because China is not part of the International Driving Permit (IDP) convention, a Chinese license can't be used to apply for an official IDP—but many countries and rental companies accept a Chinese driver's license combined with a certified translation and an international driving document. Customers need a convenient, fast, and trustworthy translation-and-certification service, which is exactly what IDP Plus automates.
 
