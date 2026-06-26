@@ -44,7 +44,7 @@ AI and Digital Transformation Engineer with experience delivering industrial aut
 - Designed middleware solutions connecting shop-floor equipment and MES systems, implementing device monitoring, heartbeat detection, automated data validation, and production data synchronization.
 
 ### GenAI Consultant (Practicum)
-**Manulife | Toronto, Canada | 2024**
+**Manulife | Toronto, Canada | 2023-2024**
 
 - Developed a proof-of-concept Retrieval-Augmented Generation (RAG) HR assistant enabling employees to query internal policies using natural language.
 - Designed and deployed an AI-powered policy authoring platform for HR teams, automating policy generation while enforcing corporate writing and formatting standards.

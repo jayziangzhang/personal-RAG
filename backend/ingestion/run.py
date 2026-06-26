@@ -15,11 +15,20 @@ from backend.retrieval.bm25_store import build_index
 
 
 def run_ingestion() -> None:
-    docs = load_documents()
-    chunks = split_documents(docs)
-    ingest_chunks(chunks)   # → ChromaDB (vector search)
-    build_index(chunks)     # → BM25 index (keyword search)
-    print("[Ingestion] Done.")
+    import time
+    for attempt in range(1, 4):
+        try:
+            docs = load_documents()
+            chunks = split_documents(docs)
+            ingest_chunks(chunks)   # → ChromaDB (vector search)
+            build_index(chunks)     # → BM25 index (keyword search)
+            print("[Ingestion] Done.")
+            return
+        except Exception as e:
+            print(f"[Ingestion] Attempt {attempt} failed: {e}")
+            if attempt < 3:
+                time.sleep(5)
+    raise RuntimeError("[Ingestion] All attempts failed.")
 
 
 if __name__ == "__main__":
