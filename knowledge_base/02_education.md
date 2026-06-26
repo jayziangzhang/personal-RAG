@@ -1,0 +1,27 @@
+# Education
+
+## Education Overview
+I hold a Master of Management Analytics (MMA) from the Rotman School of Management, University of Toronto (2024), and a Bachelor of Applied Science in Electrical and Computer Engineering with a Minor in Engineering Business, also from the University of Toronto. Alongside my undergraduate degree, I completed U of T's Artificial Intelligence certificate. My education deliberately spans three pillars—engineering fundamentals, business decision-making, and AI/analytics—which together define how I approach problems today.
+
+## Rotman MMA — Most Valuable Coursework
+I completed the MMA program in 2024. Coming from a pure software-development background, one of the most impactful courses for me was *Modeling Tools for Predictive Analytics*. Unlike traditional software-engineering courses, it demanded a strong grasp of probability, statistics, predictive modeling, and machine learning. I invested far more time than usual to build that foundation, and it became one of the most rewarding experiences of the program—it expanded my technical toolkit well beyond software development and laid the groundwork for my move into data analytics and AI.
+
+## Rotman MMA — Practicum: GenAI HR Assistant for Manulife (RAG)
+My most memorable experience in the program was a practicum project with Manulife's HR organization. My team built a GenAI-powered HR Policy Assistant using a Retrieval-Augmented Generation (RAG) architecture, designed to reduce repetitive HR inquiries about vacation policies, benefits, leave requests, and other common employee questions. Employees could ask questions in natural language and receive answers grounded in official HR policy documents.
+
+We also designed a second GenAI solution for HR policy *authoring*: a web-based platform that helped HR professionals draft and rewrite policies through an end-to-end AI workflow. It incorporated the company's internal writing standards, terminology requirements, and communication guidelines, and let users generate plain-text output or export HTML while preserving formatting. Leveraging my software-engineering background, I led much of the application development, deployment, and integration. The solution was deployed on company infrastructure, received highly positive stakeholder feedback, and demonstrated how GenAI can create measurable value in a traditionally non-technical business function.
+
+## Undergraduate — Why ECE + Engineering Business Minor
+I chose Electrical and Computer Engineering because I was fascinated by how complex systems are built—from hardware all the way up to software. I added the Engineering Business minor because I wanted to understand not just how technology works, but how businesses make decisions and create value. Software development was one of my strongest interests throughout my undergraduate studies, and I was deeply interested in AI long before the recent GenAI boom.
+
+## Undergraduate — AI Projects & NLP Capstone
+During university I worked on several AI projects, including a computer-vision system using YOLOv3 for traffic-sign and traffic-light detection: it processed real-time dashcam footage, identified road signs and signals, and produced classification probabilities for each detected object. My capstone under Professor Jonathan Rose focused on NLP and machine learning—my team built a system that analyzed customer conversations to evaluate call quality. We converted audio recordings to text via speech-to-text, then applied NLP and ML to perform sentiment analysis and generate conversation-quality scores. In hindsight, this was my first serious exposure to language AI and planted the seeds for my later interest in large language models. These experiences, combined with AI-focused coursework and research, led me to complete U of T's Artificial Intelligence certificate alongside my engineering degree. My interest in AI started long before ChatGPT and has been a consistent theme throughout my academic and professional journey.
+
+## Why the University of Toronto & How It Shaped Me
+The University of Toronto shaped me as both an engineer and a person, largely through traditions that turn values into something you physically live.
+
+During F!rosh Week, new engineering students dye themselves purple—a tradition said to honor the marine engineers of the *Titanic*, who stayed at their posts below deck to keep the lights and pumps running so others could reach the lifeboats. The lesson stuck with me: engineers are the ones who stay at their post and do the unglamorous work that keeps everyone else safe.
+
+The Iron Ring reinforced that. The Ritual of the Calling of an Engineer dates back to the 1907 Quebec Bridge collapse, which killed 75 workers because of design flaws and poor oversight. The ring is worn on the little finger of the working hand, where it brushes the page as you write—a constant reminder of your obligation. To me it represents accountability, professional ethics, and the responsibility engineers carry toward the public.
+
+Professor Jonathan Rose taught the same lesson in class through the Therac-25 incident, where a small software defect in a radiation-therapy machine led to deaths—proof that even in software, data, and AI, our mistakes can have real-world consequences. Across both my undergraduate and graduate years, U of T gave me far more than technical knowledge: it taught me to think critically, act responsibly, and approach every problem with integrity.
