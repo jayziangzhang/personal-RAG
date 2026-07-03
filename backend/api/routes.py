@@ -22,6 +22,7 @@ from backend.advanced.reranker import rerank
 from backend.retrieval import vector_store, hybrid
 from backend.generation.generator import generate
 from backend.ingestion.run import run_ingestion
+from backend.notifications.mailer import notify_async
 
 router = APIRouter()
 
@@ -73,6 +74,8 @@ async def query(request: QueryRequest) -> QueryResponse:
 
         # Step 5: Generate
         result = generate(original, top_chunks)
+
+        notify_async(original, result.answer, result.sources)
 
         return QueryResponse(
             answer=result.answer,
