@@ -1,41 +1,29 @@
 """
-mailer.py — Send Q&A notification emails via Gmail SMTP.
+mailer.py — Send Q&A notification emails via Resend HTTP API.
 
-Called asynchronously after each /query so it never delays the API response.
-Credentials are loaded from environment variables (set in Railway).
+Railway blocks outbound SMTP, so we use Resend (HTTP-based) instead.
+Set RESEND_API_KEY in Railway Variables.
 """
 
 import os
-import smtplib
 import threading
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-_GMAIL_USER = os.environ.get("GMAIL_USER", "jay.ziang.zhang@gmail.com")
-_GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
+_RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 _NOTIFY_TO = os.environ.get("NOTIFY_TO", "jay.ziang.zhang@gmail.com")
 
 
 def _send(question: str, answer: str, sources: list) -> None:
-    if not _GMAIL_APP_PASSWORD:
-        print("[Mailer] GMAIL_APP_PASSWORD not set — skipping email.")
+    if not _RESEND_API_KEY:
+        print("[Mailer] RESEND_API_KEY not set — skipping email.")
         return
+
+    import resend
+    resend.api_key = _RESEND_API_KEY
 
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
     sources_text = ", ".join(sources) if sources else "—"
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"[RAG] New question: {question[:60]}{'…' if len(question) > 60 else ''}"
-    msg["From"] = _GMAIL_USER
-    msg["To"] = _NOTIFY_TO
-
-    plain = (
-        f"Time:     {timestamp}\n"
-        f"Question: {question}\n\n"
-        f"Answer:\n{answer}\n\n"
-        f"Sources: {sources_text}"
-    )
+    subject = f"[RAG] {question[:60]}{'…' if len(question) > 60 else ''}"
 
     html = f"""
     <html><body style="font-family:sans-serif;max-width:640px;margin:auto;padding:24px">
@@ -43,7 +31,7 @@ def _send(question: str, answer: str, sources: list) -> None:
       <p style="color:#888;font-size:13px">{timestamp}</p>
       <table style="width:100%;border-collapse:collapse">
         <tr>
-          <td style="padding:12px;background:#f0f4ff;border-radius:8px;vertical-align:top;width:80px">
+          <td style="padding:12px;background:#f0f4ff;border-radius:8px;vertical-align:top;width:30px">
             <strong>Q</strong>
           </td>
           <td style="padding:12px;background:#f0f4ff;border-radius:8px">
@@ -52,7 +40,7 @@ def _send(question: str, answer: str, sources: list) -> None:
         </tr>
         <tr><td colspan="2" style="padding:6px"></td></tr>
         <tr>
-          <td style="padding:12px;background:#f6fff0;border-radius:8px;vertical-align:top;width:80px">
+          <td style="padding:12px;background:#f6fff0;border-radius:8px;vertical-align:top;width:30px">
             <strong>A</strong>
           </td>
           <td style="padding:12px;background:#f6fff0;border-radius:8px;white-space:pre-wrap">
@@ -64,14 +52,14 @@ def _send(question: str, answer: str, sources: list) -> None:
     </body></html>
     """
 
-    msg.attach(MIMEText(plain, "plain"))
-    msg.attach(MIMEText(html, "html"))
-
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(_GMAIL_USER, _GMAIL_APP_PASSWORD)
-            server.sendmail(_GMAIL_USER, _NOTIFY_TO, msg.as_string())
-        print(f"[Mailer] Email sent for question: {question[:50]}")
+        resend.Emails.send({
+            "from": "RAG Notifier <onboarding@resend.dev>",
+            "to": [_NOTIFY_TO],
+            "subject": subject,
+            "html": html,
+        })
+        print(f"[Mailer] Email sent for: {question[:50]}")
     except Exception as e:
         print(f"[Mailer] Failed to send email: {e}")
 
