@@ -1,5 +1,26 @@
 # Personal Advanced RAG System
 
+# Ask Me Anything — Personal AI Assistant
+
+"This website", "this page", "this chatbot" and etc. is referred as "Personal Advanced RAG System - Ask Me Anything", 
+a personal AI assistant built by Ziang (Jay) Zhang.
+
+It is a full-stack Advanced RAG (Retrieval-Augmented Generation) system 
+that answers questions about Jay's background, experience, and skills.
+
+## How it works
+- Built with FastAPI (backend) and GitHub Pages (frontend)
+- Uses hybrid search (ChromaDB vector search + BM25) for retrieval
+- Re-ranks results with a CrossEncoder model
+- Generates answers with GPT-4o-mini in first person as Jay
+
+## Tech stack
+Python · FastAPI · ChromaDB · BM25 · CrossEncoder · OpenAI · Docker · Railway · GitHub Pages
+
+## Why I built it
+I built this as a learning project to explore Advanced RAG techniques, 
+including query rewriting, HyDE, hybrid search, and re-ranking.
+It also serves as a living portfolio piece that lets people learn about me interactively.
 ## Overview
 
 The Personal Advanced RAG System is a self-hosted Retrieval-Augmented Generation platform built over a personal knowledge base containing project notes, resume details, learning materials, and PDF documents. It exposes the knowledge base as a natural-language question-answering service.
