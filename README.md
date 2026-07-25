@@ -1,19 +1,23 @@
-# Personal RAG System
+# Personal RAG — Ask Me Anything
 
-A self-hosted **Advanced RAG** (Retrieval-Augmented Generation) system built over a personal knowledge base, powered by FastAPI, ChromaDB, and OpenAI.
+I built this as my personal interactive resume — an AI assistant that answers questions about my background, experience, and projects in first person. Instead of handing someone a static PDF, they can just ask.
+
+Under the hood it's a self-hosted **Advanced RAG** system built with FastAPI, ChromaDB, BM25, OpenAI Embeddings, and CrossEncoder Re-ranking, deployed on Railway via Docker with a GitHub Pages frontend.
 
 ---
 
-## What is Advanced RAG?
+## Why Advanced RAG — Not Naive RAG
 
-**Naive RAG** pipelines suffer from low retrieval quality — vague queries return noisy chunks, and the LLM hallucinates from weak context. Advanced RAG addresses this across three stages:
+A naive RAG pipeline (`Query → Vector Search → Top-K → LLM`) breaks down in practice: vague queries miss relevant documents, vector search alone struggles with names and acronyms, and noisy top-K chunks cause hallucinations.
+
+I improved retrieval across three stages:
 
 ```
 Pre-Retrieval       Retrieval            Post-Retrieval
 ──────────────      ─────────            ──────────────
 Query Rewriting  →  Hybrid Search    →   Re-ranking
-HyDE             →  Semantic + BM25  →   Context Compression
-                                     →   Answer Generation
+HyDE             →  Semantic + BM25  →   Context Selection
+                    RRF Fusion       →   Answer Generation
 ```
 
 ---
@@ -22,46 +26,18 @@ HyDE             →  Semantic + BM25  →   Context Compression
 
 | Module | Technology | Purpose |
 |---|---|---|
-| **Document Loading** | LangChain loaders | Parse `.md` and `.pdf` from the knowledge base |
-| **Chunking** | LangChain text splitters | Split documents into semantically meaningful chunks |
+| **Document Loading** | LangChain TextLoader | Parse `.md` files from the knowledge base |
+| **Chunking** | LangChain RecursiveCharacterTextSplitter | Split documents into chunks (size=500, overlap=50) |
 | **Embedding** | `text-embedding-3-small` (OpenAI) | Convert chunks into dense vectors |
 | **Vector Store** | ChromaDB (local) | Persist and search vectors |
 | **BM25 Store** | `rank_bm25` | Keyword-based sparse retrieval |
-| **Query Rewriting** | LLM prompt | Rewrite user queries to improve retrieval recall |
-| **HyDE** | LLM-generated hypothetical answer | Use a fake answer as a retrieval probe to boost recall |
-| **Hybrid Search** | Vector + BM25 fusion (RRF) | Combine semantic and keyword search results |
-| **Re-ranking** | CrossEncoder (`cross-encoder/ms-marco-MiniLM-L-6-v2`) | Re-score and re-order retrieved chunks |
-| **Generation** | Claude / GPT | Generate the final grounded answer |
-| **API Layer** | FastAPI | Expose query and ingestion endpoints |
-
----
-
-## Project Structure
-
-```
-personal RAG/
-├── knowledge_base/            # Source documents (.md, .pdf) — do not modify
-├── backend/
-│   ├── main.py                # FastAPI entry point
-│   ├── config.py              # Centralized config (model names, paths, parameters)
-│   ├── ingestion/
-│   │   ├── loader.py          # Load .md and .pdf files
-│   │   └── chunker.py         # Chunking strategies with metadata
-│   ├── retrieval/
-│   │   ├── embedder.py        # OpenAI embedding wrapper
-│   │   ├── vector_store.py    # ChromaDB read/write
-│   │   ├── bm25_store.py      # BM25 index build and query
-│   │   └── hybrid.py          # Reciprocal Rank Fusion (RRF) over both stores
-│   ├── advanced/
-│   │   ├── query_rewriter.py  # LLM-based query rewriting
-│   │   ├── hyde.py            # Hypothetical Document Embedding
-│   │   └── reranker.py        # CrossEncoder re-ranking
-│   ├── generation/
-│   │   └── generator.py       # Final answer generation with context
-│   └── api/
-│       └── routes.py          # FastAPI route definitions
-└── requirements.txt
-```
+| **Query Rewriting** | GPT-4o-mini | Expand and clarify user queries before retrieval |
+| **HyDE** | GPT-4o-mini | Generate a hypothetical answer as an additional retrieval probe |
+| **Hybrid Search** | Vector + BM25 + RRF (k=60) | Fuse semantic and keyword results by rank |
+| **Re-ranking** | CrossEncoder (`cross-encoder/ms-marco-MiniLM-L-6-v2`) | Re-score top-10 candidates, keep top-3 |
+| **Generation** | GPT-4o-mini | Generate grounded first-person answer |
+| **API Layer** | FastAPI | `/query`, `/ingest`, `/health` endpoints |
+| **Notifications** | Resend API | Email notification on each query |
 
 ---
 
@@ -73,42 +49,66 @@ User: "What did Jay do at Manulife?"
 1. Query Rewriting
    → "Manulife GenAI RAG project, technical details, outcomes, HR assistant"
         ↓
-2. HyDE (Hypothetical Document Embedding)
-   → LLM generates a fake answer → used as an additional retrieval probe
+2. HyDE
+   → LLM generates a hypothetical answer → embedded as extra retrieval probe
         ↓
 3. Hybrid Search
-   → Semantic search (ChromaDB) + BM25 keyword search → Top-10 candidates
+   → ChromaDB (top-20) + BM25 (top-20) → RRF fusion → top-10 candidates
         ↓
-4. Re-ranking (CrossEncoder)
-   → Score all 10 against the original query → keep Top-3
+4. CrossEncoder Re-ranking
+   → Score all 10 against the original query → keep top-3
         ↓
 5. Answer Generation
-   → LLM receives [original query + Top-3 chunks] → generates grounded answer
-        ↓
-User sees: a precise, source-grounded response
+   → GPT-4o-mini receives [original query + top-3 chunks] → first-person answer
 ```
 
 ---
 
+## Project Structure
 
-## Getting Started
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run ingestion (index your knowledge base)
-python -m backend.ingestion.run
-
-# Start the API server
-uvicorn backend.main:app --reload
+```
+personal RAG/
+├── knowledge_base/            # Markdown source documents
+├── backend/
+│   ├── main.py                # FastAPI entry point
+│   ├── config.py              # Centralized config
+│   ├── ingestion/
+│   │   ├── loader.py          # Load .md files
+│   │   └── chunker.py         # Chunking with metadata
+│   ├── retrieval/
+│   │   ├── embedder.py        # OpenAI embedding wrapper
+│   │   ├── vector_store.py    # ChromaDB read/write
+│   │   ├── bm25_store.py      # BM25 index build and query
+│   │   └── hybrid.py          # RRF fusion
+│   ├── advanced/
+│   │   ├── query_rewriter.py  # Query rewriting
+│   │   ├── hyde.py            # HyDE
+│   │   └── reranker.py        # CrossEncoder re-ranking
+│   ├── generation/
+│   │   └── generator.py       # Answer generation
+│   ├── notifications/
+│   │   └── mailer.py          # Resend email notification
+│   └── api/
+│       └── routes.py          # FastAPI routes
+└── requirements.txt
 ```
 
 ---
 
 ## Design Decisions
 
-- **ChromaDB over Pinecone/Weaviate** — local-first, zero infra cost, perfect for a personal system.
-- **HyDE + Query Rewriting together** — they are complementary: rewriting improves the query signal; HyDE expands the retrieval surface.
-- **RRF fusion** — Reciprocal Rank Fusion is parameter-free and robust; no need to tune score weights between vector and BM25.
-- **CrossEncoder re-ranking** — more accurate than bi-encoder similarity alone, runs fast on CPU for small Top-K sets.
+- **ChromaDB over Pinecone/Weaviate** — local-first, zero infra cost, runs inside Docker with no external dependency.
+- **Query Rewriting + HyDE together** — complementary: rewriting improves the query signal; HyDE expands the retrieval surface with a richer semantic probe.
+- **RRF over score normalization** — parameter-free and robust; no need to tune mixing weights between vector and BM25 scores.
+- **CrossEncoder after hybrid search** — hybrid retrieval maximizes recall; CrossEncoder improves precision. Running it on top-10 candidates (not the full corpus) keeps latency under 200ms on CPU.
+- **GPT-4o-mini** — fast and cheap for grounded Q&A where retrieval does the heavy lifting.
+
+---
+
+## Getting Started
+
+```bash
+pip install -r requirements.txt
+python -m backend.ingestion.run
+uvicorn backend.main:app --reload
+```
